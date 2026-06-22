@@ -1,0 +1,42 @@
+# ========================
+# Environment variables — NEVER commit these
+# ========================
+.env
+.env.local
+.env.production
+
+# ========================
+# Node modules
+# ========================
+node_modules/
+*/node_modules/
+
+# ========================
+# Uploaded files (user data — don't commit)
+# ========================
+backend/uploads/*
+!backend/uploads/.gitkeep
+
+# ========================
+# Build output
+# ========================
+dist/
+build/
+
+# ========================
+# Logs
+# ========================
+*.log
+npm-debug.log*
+
+# ========================
+# OS files
+# ========================
+.DS_Store
+Thumbs.db
+
+# ========================
+# IDE
+# ========================
+.vscode/
+.idea/
