@@ -1,7 +1,5 @@
 const axios = require('axios');
 
-const OLLAMA_URL = 'http://localhost:11434/api/generate';
-
 const analyzeReport = async (reportText) => {
   const prompt = `You are a medical assistant helping a patient understand their report.
 
@@ -30,19 +28,27 @@ Respond ONLY in valid JSON format, no extra text, with this exact structure:
 Only include parameters in "flags" that are abnormal (high or low). If everything is normal, return an empty array for flags.`;
 
   try {
-    const response = await axios.post(OLLAMA_URL, {
-      model: 'llama3.2',
-      prompt: prompt,
-      stream: false,
-      format: 'json',
-    });
+    const response = await axios.post(
+      'https://api.groq.com/openai/v1/chat/completions',
+      {
+        model: 'llama3-70b-8192',
+        messages: [{ role: 'user', content: prompt }],
+        temperature: 0.3,
+        response_format: { type: 'json_object' },
+      },
+      {
+        headers: {
+          Authorization: `Bearer ${process.env.GROQ_API_KEY}`,
+          'Content-Type': 'application/json',
+        },
+      }
+    );
 
-    const aiResponseText = response.data.response;
+    const aiResponseText = response.data.choices[0].message.content;
     const parsed = JSON.parse(aiResponseText);
-
     return parsed;
   } catch (err) {
-    console.error('Ollama analysis error:', err.message);
+    console.error('Groq analysis error:', err.response?.data || err.message);
     throw new Error('Failed to analyze report with AI.');
   }
 };
