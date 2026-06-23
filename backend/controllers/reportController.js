@@ -11,8 +11,8 @@ const uploadReport = async (req, res) => {
 
   try {
     // Step 1 — Read the PDF file from disk
-    const filePath = req.file.path;
-    const dataBuffer = fs.readFileSync(filePath);
+    const dataBuffer = req.file.buffer;
+    const filePath = req.file.originalname;
 
     // Step 2 — Extract text from the PDF using the new v2 class-based API
     const parser = new PDFParse({ data: dataBuffer });
