@@ -47,7 +47,7 @@ const uploadReport = async (req, res) => {
       report: {
         id: result2.insertId,
         filename: req.file.originalname,
-        summary: analysis.summary,
+        ai_summary: analysis.summary,
         flags: analysis.flags,
         questions: analysis.questions,
       },
