@@ -12,7 +12,10 @@ interface ReportResultProps {
 export default function ReportResult({ report, onClose }: ReportResultProps) {
 
   const getFlagStyle = (status: ReportFlag['status']) => {
-    switch (status) {
+    // Normalize status to lowercase to handle any AI casing inconsistencies (e.g. "High", "HIGH")
+    const normalizedStatus = (status as string)?.toLowerCase?.()
+
+    switch (normalizedStatus) {
       case 'high': return {
         bg: 'rgba(239,68,68,0.08)', border: 'rgba(239,68,68,0.25)',
         text: '#FCA5A5', badge: { bg: 'rgba(239,68,68,0.15)', border: 'rgba(239,68,68,0.3)', color: '#FCA5A5' },
@@ -23,10 +26,16 @@ export default function ReportResult({ report, onClose }: ReportResultProps) {
         text: '#FCD34D', badge: { bg: 'rgba(245,158,11,0.15)', border: 'rgba(245,158,11,0.3)', color: '#FCD34D' },
         icon: <ArrowDown size={11} />, label: 'LOW'
       }
-      default: return {
+      case 'normal': return {
         bg: 'rgba(16,185,129,0.08)', border: 'rgba(16,185,129,0.25)',
         text: '#6EE7B7', badge: { bg: 'rgba(16,185,129,0.15)', border: 'rgba(16,185,129,0.3)', color: '#6EE7B7' },
         icon: <CheckCircle size={11} />, label: 'NORMAL'
+      }
+      // Catch-all: unknown status from AI — treat as abnormal (amber/warning) rather than falsely showing green
+      default: return {
+        bg: 'rgba(245,158,11,0.08)', border: 'rgba(245,158,11,0.25)',
+        text: '#FCD34D', badge: { bg: 'rgba(245,158,11,0.15)', border: 'rgba(245,158,11,0.3)', color: '#FCD34D' },
+        icon: <AlertTriangle size={11} />, label: 'ABNORMAL'
       }
     }
   }

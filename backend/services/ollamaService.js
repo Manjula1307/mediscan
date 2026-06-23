@@ -14,7 +14,7 @@ Respond ONLY in valid JSON format, no extra text, with this exact structure:
       "parameter": "name of the test value",
       "value": "the actual value with units",
       "normal_range": "the normal range",
-      "status": "high or low or normal",
+      "status": "high or low",
       "concern": "brief explanation of what this might mean"
     }
   ],
@@ -25,7 +25,12 @@ Respond ONLY in valid JSON format, no extra text, with this exact structure:
   ]
 }
 
-Only include parameters in "flags" that are abnormal (high or low). If everything is normal, return an empty array for flags.`;
+CRITICAL RULES for "flags":
+- ONLY include values that are genuinely abnormal (outside the normal range).
+- The "status" field MUST be either "high" (value is above normal range) or "low" (value is below normal range). NEVER use "normal" as a status.
+- Do NOT include any value in "flags" if it falls within the normal range.
+- If all values are normal, return an empty array: "flags": []
+- Double-check each value against its normal range before including it.`;
 
   try {
     const response = await axios.post(
