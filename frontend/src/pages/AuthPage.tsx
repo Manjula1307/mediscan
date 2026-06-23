@@ -3,6 +3,42 @@ import { useNavigate } from 'react-router-dom'
 import { useAuth } from '../context/AuthContext'
 import { Stethoscope, Mail, Lock, User, Eye, EyeOff, ArrowLeft } from 'lucide-react'
 
+// ✅ Defined OUTSIDE the component so React never remounts it on re-render
+const InputField = ({
+  icon, type, value, onChange, placeholder
+}: {
+  icon: React.ReactNode
+  type: string
+  value: string
+  onChange: (v: string) => void
+  placeholder: string
+}) => (
+  <div className="relative">
+    <div className="absolute left-3.5 top-1/2 -translate-y-1/2 text-white/30">
+      {icon}
+    </div>
+    <input
+      type={type}
+      value={value}
+      onChange={(e) => onChange(e.target.value)}
+      placeholder={placeholder}
+      className="w-full pl-10 pr-4 py-3 rounded-xl text-sm text-white placeholder-white/25 outline-none transition-all duration-200 border"
+      style={{
+        background: 'rgba(255,255,255,0.05)',
+        borderColor: 'rgba(255,255,255,0.1)',
+      }}
+      onFocus={(e) => {
+        e.target.style.borderColor = 'rgba(124,58,237,0.6)'
+        e.target.style.background = 'rgba(124,58,237,0.08)'
+      }}
+      onBlur={(e) => {
+        e.target.style.borderColor = 'rgba(255,255,255,0.1)'
+        e.target.style.background = 'rgba(255,255,255,0.05)'
+      }}
+    />
+  </div>
+)
+
 export default function AuthPage() {
   const { login, register } = useAuth()
   const navigate = useNavigate()
@@ -37,42 +73,6 @@ export default function AuthPage() {
       setLoading(false)
     }
   }
-
-  const InputField = ({
-    icon, type, value, onChange, placeholder
-  }: {
-    icon: React.ReactNode
-    type: string
-    value: string
-    onChange: (v: string) => void
-    placeholder: string
-  }) => (
-    <div className="relative">
-      <div className="absolute left-3.5 top-1/2 -translate-y-1/2 text-white/30">
-        {icon}
-      </div>
-      <input
-        type={type}
-        value={value}
-        onChange={(e) => onChange(e.target.value)}
-        placeholder={placeholder}
-        onKeyDown={(e) => e.key === 'Enter' && handleSubmit()}
-        className="w-full pl-10 pr-4 py-3 rounded-xl text-sm text-white placeholder-white/25 outline-none transition-all duration-200 border"
-        style={{
-          background: 'rgba(255,255,255,0.05)',
-          borderColor: 'rgba(255,255,255,0.1)',
-        }}
-        onFocus={(e) => {
-          e.target.style.borderColor = 'rgba(124,58,237,0.6)'
-          e.target.style.background = 'rgba(124,58,237,0.08)'
-        }}
-        onBlur={(e) => {
-          e.target.style.borderColor = 'rgba(255,255,255,0.1)'
-          e.target.style.background = 'rgba(255,255,255,0.05)'
-        }}
-      />
-    </div>
-  )
 
   return (
     <div
@@ -161,7 +161,7 @@ export default function AuthPage() {
                     type="text"
                     value={name}
                     onChange={setName}
-                    placeholder="Manjula Satapathi"
+                    placeholder="Your full name"
                   />
                 </div>
               )}
