@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react'
-import { Clock, FileText, ChevronRight, Loader2 } from 'lucide-react'
+import { Clock, FileText, ChevronRight, History } from 'lucide-react'
 import { getMyReports, getReportById } from '../api/reports'
 import type { ReportSummary, Report } from '../types'
 
@@ -27,6 +27,7 @@ export default function ReportHistory({ onViewReport, refreshTrigger }: ReportHi
     }
     fetchReports()
   }, [refreshTrigger])
+
   const handleViewReport = async (id: number) => {
     setLoadingId(id)
     try {
@@ -39,60 +40,110 @@ export default function ReportHistory({ onViewReport, refreshTrigger }: ReportHi
     }
   }
 
-  const formatDate = (dateString: string) => {
-    return new Date(dateString).toLocaleDateString('en-IN', {
-      day: 'numeric',
-      month: 'short',
-      year: 'numeric',
+  const formatDate = (dateString: string) =>
+    new Date(dateString).toLocaleDateString('en-IN', {
+      day: 'numeric', month: 'short', year: 'numeric'
     })
-  }
 
   return (
-    <div className="bg-white rounded-2xl shadow-sm border border-gray-100 p-6">
-      <h2 className="text-lg font-bold text-gray-900 mb-1">Report History</h2>
-      <p className="text-sm text-gray-400 mb-5">Your previously uploaded reports</p>
+    <div
+      className="animate-fade-up-delay-2 rounded-2xl overflow-hidden border"
+      style={{ background: 'rgba(255,255,255,0.03)', borderColor: 'rgba(255,255,255,0.08)' }}
+    >
+      {/* Card header */}
+      <div
+        className="px-6 py-4 border-b flex items-center justify-between"
+        style={{ borderColor: 'rgba(255,255,255,0.06)' }}
+      >
+        <div className="flex items-center gap-3">
+          <div
+            className="w-8 h-8 rounded-lg flex items-center justify-center"
+            style={{ background: 'rgba(99,102,241,0.2)', border: '1px solid rgba(99,102,241,0.3)' }}
+          >
+            <History size={15} className="text-indigo-400" />
+          </div>
+          <div>
+            <h2 className="text-sm font-bold text-white">Report History</h2>
+            <p className="text-white/30 text-xs mt-0.5">
+              {reports.length > 0
+                ? `${reports.length} report${reports.length !== 1 ? 's' : ''} analysed`
+                : 'Your previously uploaded reports'}
+            </p>
+          </div>
+        </div>
+      </div>
 
-      {loading ? (
-        <div className="flex items-center justify-center py-8">
-          <Loader2 className="animate-spin text-blue-600" size={24} />
-        </div>
-      ) : reports.length === 0 ? (
-        <div className="text-center py-10">
-          <FileText className="mx-auto text-gray-200 mb-3" size={44} />
-          <p className="text-gray-400 font-medium text-sm">No reports yet</p>
-          <p className="text-gray-300 text-xs mt-1">Upload your first report above</p>
-        </div>
-      ) : (
-        <div className="space-y-3">
-          {reports.map((report) => (
-            <button
-              key={report.id}
-              onClick={() => handleViewReport(report.id)}
-              disabled={loadingId === report.id}
-              className="w-full text-left bg-gray-50 hover:bg-blue-50 border border-gray-100 hover:border-blue-200 rounded-xl p-4 transition-all flex items-center gap-4 group"
+      <div className="p-6">
+        {loading ? (
+          <div className="flex flex-col items-center justify-center py-12 gap-3">
+            <div className="w-8 h-8 rounded-full border-2 border-purple-500/30 border-t-purple-500 animate-spin" />
+            <p className="text-white/25 text-xs">Loading reports...</p>
+          </div>
+        ) : reports.length === 0 ? (
+          <div className="text-center py-14">
+            <div
+              className="w-16 h-16 rounded-2xl flex items-center justify-center mx-auto mb-4"
+              style={{ background: 'rgba(255,255,255,0.04)', border: '1px solid rgba(255,255,255,0.08)' }}
             >
-              <div className="bg-blue-100 p-2.5 rounded-xl flex-shrink-0">
-                <FileText className="text-blue-600" size={18} />
-              </div>
-              <div className="flex-1 min-w-0">
-                <p className="font-semibold text-gray-800 text-sm truncate">{report.filename}</p>
-                <p className="text-xs text-gray-400 mt-0.5 line-clamp-1">{report.ai_summary}</p>
-                <div className="flex items-center gap-1 mt-1.5">
-                  <Clock size={11} className="text-gray-300" />
-                  <span className="text-xs text-gray-300">{formatDate(report.created_at)}</span>
+              <FileText size={24} className="text-white/20" />
+            </div>
+            <p className="text-white/35 font-semibold text-sm">No reports yet</p>
+            <p className="text-white/20 text-xs mt-1">Upload your first report above to get started</p>
+          </div>
+        ) : (
+          <div className="space-y-2.5">
+            {reports.map((report) => (
+              <button
+                key={report.id}
+                onClick={() => handleViewReport(report.id)}
+                disabled={loadingId === report.id}
+                className="w-full text-left rounded-xl p-4 transition-all duration-200 flex items-center gap-4 group border disabled:opacity-50"
+                style={{ background: 'rgba(255,255,255,0.03)', borderColor: 'rgba(255,255,255,0.07)' }}
+                onMouseEnter={(e) => {
+                  (e.currentTarget as HTMLButtonElement).style.background = 'rgba(124,58,237,0.08)';
+                  (e.currentTarget as HTMLButtonElement).style.borderColor = 'rgba(124,58,237,0.25)'
+                }}
+                onMouseLeave={(e) => {
+                  (e.currentTarget as HTMLButtonElement).style.background = 'rgba(255,255,255,0.03)';
+                  (e.currentTarget as HTMLButtonElement).style.borderColor = 'rgba(255,255,255,0.07)'
+                }}
+              >
+                {/* File icon */}
+                <div
+                  className="w-10 h-10 rounded-xl flex items-center justify-center flex-shrink-0 transition-all duration-200 border"
+                  style={{
+                    background: 'rgba(124,58,237,0.12)',
+                    borderColor: 'rgba(124,58,237,0.2)'
+                  }}
+                >
+                  <FileText size={17} className="text-purple-400" />
                 </div>
-              </div>
-              <div className="flex-shrink-0">
-                {loadingId === report.id ? (
-                  <Loader2 size={18} className="text-blue-600 animate-spin" />
-                ) : (
-                  <ChevronRight size={18} className="text-gray-300 group-hover:text-blue-400 transition-colors" />
-                )}
-              </div>
-            </button>
-          ))}
-        </div>
-      )}
+
+                {/* Content */}
+                <div className="flex-1 min-w-0">
+                  <p className="font-semibold text-white text-sm truncate">{report.filename}</p>
+                  <p className="text-white/30 text-xs mt-0.5 line-clamp-1 leading-relaxed">
+                    {report.ai_summary}
+                  </p>
+                  <div className="flex items-center gap-1.5 mt-1.5">
+                    <Clock size={10} className="text-white/20" />
+                    <span className="text-white/20 text-xs">{formatDate(report.created_at)}</span>
+                  </div>
+                </div>
+
+                {/* Arrow / loader */}
+                <div className="flex-shrink-0">
+                  {loadingId === report.id ? (
+                    <div className="w-4 h-4 rounded-full border-2 border-purple-500/30 border-t-purple-400 animate-spin" />
+                  ) : (
+                    <ChevronRight size={16} className="text-white/20 group-hover:text-purple-400 transition-colors" />
+                  )}
+                </div>
+              </button>
+            ))}
+          </div>
+        )}
+      </div>
     </div>
   )
 }
